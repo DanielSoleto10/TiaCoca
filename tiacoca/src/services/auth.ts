@@ -1,3 +1,4 @@
+// src/services/auth.ts
 import api from './api';
 
 // Tipos
@@ -9,7 +10,8 @@ export interface LoginCredentials {
 export interface User {
   id: string;
   email: string;
-  name: string;
+  name?: string;
+  full_name?: string; // Agregamos esta propiedad para compatibilidad
   role: 'admin' | 'employee';
 }
 
@@ -57,8 +59,8 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
 export const logout = async (): Promise<void> => {
   try {
     await api.post('/auth/logout');
-  } catch (error) {
-    console.error('Error al cerrar sesión:', error);
+  } catch {
+    console.error('Error al cerrar sesión');
   } finally {
     removeToken();
     window.location.href = '/login';
@@ -87,7 +89,7 @@ export const verifyToken = async (): Promise<boolean> => {
   try {
     const response = await api.post('/auth/verify');
     return response.data.valid;
-  } catch (error) {
+  } catch {
     removeToken();
     return false;
   }
