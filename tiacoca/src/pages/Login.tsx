@@ -8,6 +8,7 @@ interface ApiError {
   response?: {
     data?: {
       message?: string;
+      statusCode?: number;
     };
   };
   message?: string;
@@ -18,8 +19,9 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [errorVisible, setErrorVisible] = useState(false);
   const navigate = useNavigate();
-  const { isAuth, isAdmin } = useAuth();
+  const { isAuth, isAdmin, setUser } = useAuth();
 
   // Redirigir si ya está autenticado
   useEffect(() => {
@@ -28,24 +30,58 @@ const Login: React.FC = () => {
     }
   }, [isAuth, isAdmin, navigate]);
 
+  // Efecto para manejar la visibilidad del error
+  useEffect(() => {
+    if (error) {
+      setErrorVisible(true);
+      // El error se mantendrá visible durante 5 segundos (5000ms)
+      // Puedes ajustar este tiempo según tus preferencias
+      const timer = setTimeout(() => {
+        setErrorVisible(false);
+      }, 5000);
+      
+      // Limpiar el temporizador si el componente se desmonta o el error cambia
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setErrorVisible(false);
 
     try {
       const response = await login({ email, password });
       
-      // Redirigir según el rol
-      if (response.user.role === 'admin') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/employee/dashboard');
-      }
+      // Actualizar manualmente el estado del usuario en el contexto
+      setUser(response.user);
+      
+      // Usar un pequeño retraso para asegurar que el estado se actualice antes de redirigir
+      setTimeout(() => {
+        if (response.user.role === 'admin') {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/employee/dashboard');
+        }
+      }, 100);
     } catch (error: unknown) {
       // Usamos el tipo ApiError para manejar el error de forma segura
       const apiError = error as ApiError;
-      setError(apiError.response?.data?.message || apiError.message || 'Error al iniciar sesión');
+      
+      // Verificar si es un error de credenciales (código 401 o mensajes específicos)
+      const statusCode = apiError.response?.data?.statusCode;
+      const errorMessage = apiError.response?.data?.message || apiError.message;
+      
+      if (statusCode === 401 || 
+          errorMessage?.includes('credentials') || 
+          errorMessage?.includes('password') ||
+          errorMessage?.includes('email') ||
+          errorMessage?.includes('usuario')) {
+        setError('Correo electrónico o contraseña incorrectos. Por favor, intente nuevamente.');
+      } else {
+        setError(errorMessage || 'Error al iniciar sesión. Por favor, intente más tarde.');
+      }
     } finally {
       setLoading(false);
     }
@@ -74,8 +110,9 @@ const Login: React.FC = () => {
             <p className="text-gray-600 mt-2">Ingresa tus credenciales para continuar</p>
           </div>
           
-          {error && (
-            <div className="mb-4 p-4 rounded-md bg-red-50 border-l-4 border-red-500">
+          {/* Mensaje de error con animación de transición */}
+          {error && errorVisible && (
+            <div className="mb-4 p-4 rounded-md bg-red-50 border-l-4 border-red-500 transition-opacity duration-300">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">

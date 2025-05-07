@@ -1,8 +1,11 @@
-const { supabase } = require('../app');
+// Importar Supabase desde utils/supabase
+const supabase = require('../utils/supabase');
 
 // Obtener todos los usuarios (empleados y administradores)
 exports.getAllUsers = async (req, res) => {
   try {
+    console.log('Ejecutando getAllUsers, supabase disponible:', !!supabase);
+    
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
@@ -10,10 +13,14 @@ exports.getAllUsers = async (req, res) => {
       .order('created_at', { ascending: false });
 
     if (error) {
+      console.error('Error de Supabase en getAllUsers:', error);
       return res.status(400).json({ message: 'Error al obtener usuarios', error: error.message });
     }
 
-    res.json(data);
+    // Log para verificar los datos recibidos
+    console.log('Datos obtenidos en getAllUsers:', data?.length || 0, 'registros');
+    
+    res.json(data || []);
   } catch (error) {
     console.error('Error en getAllUsers:', error);
     res.status(500).json({ message: 'Error en el servidor', error: error.message });

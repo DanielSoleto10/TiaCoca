@@ -1,17 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const { createClient } = require('@supabase/supabase-js');
 const dotenv = require('dotenv');
-
 
 // Cargar variables de entorno
 dotenv.config();
-
-// Inicializar Supabase
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Inicializar Express
 const app = express();
@@ -43,5 +36,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Exportar cliente de Supabase para usarlo en otros archivos
-module.exports = { app, supabase };
+// Exportar app
+module.exports = { app };

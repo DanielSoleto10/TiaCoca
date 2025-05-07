@@ -7,6 +7,7 @@ interface AuthContextType {
   isAuth: boolean;
   isAdmin: boolean;
   isEmployee: boolean;
+  setUser: (user: User | null) => void; // Añadida esta función
   logout: () => Promise<void>;
 }
 
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextType>({
   isAuth: false,
   isAdmin: false,
   isEmployee: false,
+  setUser: () => {}, // Añadida esta función
   logout: async () => {},
 });
 
@@ -47,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isAuth: !!user,
     isAdmin: user?.role === 'admin',
     isEmployee: user?.role === 'employee',
+    setUser, // Añadida esta función
     logout,
   };
 
