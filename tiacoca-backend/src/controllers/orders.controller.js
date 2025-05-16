@@ -128,24 +128,6 @@ exports.createOrder = async (req, res) => {
       return res.status(400).json({ message: 'Error al crear pedido', error: error.message });
     }
 
-    // Actualizar stock de sabores
-    if (flavors && flavors.length > 0) {
-      for (const flavor of flavors) {
-        const { data: flavorData, error: flavorError } = await supabase
-          .from('flavors')
-          .select('stock')
-          .eq('name', flavor)
-          .single();
-          
-        if (!flavorError && flavorData) {
-          await supabase
-            .from('flavors')
-            .update({ stock: Math.max(0, flavorData.stock - 1) })
-            .eq('name', flavor);
-        }
-      }
-    }
-
     res.status(201).json(data[0]);
   } catch (error) {
     console.error('Error en createOrder:', error);

@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
+const supabase = require('../src/utils/supabase'); // Importar supabase desde el archivo separado
 
 // Cargar variables de entorno
 dotenv.config();
@@ -36,5 +37,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Exportar app
-module.exports = { app };
+// Exportar app y supabase
+module.exports = { app, supabase };

@@ -4,8 +4,6 @@ export interface Flavor {
   id: string;
   name: string;
   category_id: string;
-  price: number;
-  stock: number;
   categories?: {
     name: string;
   };
@@ -44,10 +42,4 @@ export const updateFlavor = async (id: string, flavor: Omit<Flavor, 'id' | 'cate
 // Eliminar un sabor
 export const deleteFlavor = async (id: string): Promise<void> => {
   await api.delete(`/flavors/${id}`);
-};
-
-// Actualizar stock de un sabor
-export const updateStock = async (id: string, stock: number): Promise<Flavor> => {
-  const response = await api.patch<Flavor>(`/flavors/${id}/stock`, { stock });
-  return response.data;
 };

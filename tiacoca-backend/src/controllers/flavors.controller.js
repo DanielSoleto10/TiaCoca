@@ -75,15 +75,13 @@ exports.getFlavorById = async (req, res) => {
 // Crear un nuevo sabor
 exports.createFlavor = async (req, res) => {
   try {
-    const { name, category_id, price, stock } = req.body;
+    const { name, category_id } = req.body;
 
     const { data, error } = await supabase
       .from('flavors')
       .insert([{ 
         name, 
-        category_id, 
-        price: parseFloat(price), 
-        stock: parseInt(stock, 10) 
+        category_id
       }])
       .select();
 
@@ -102,15 +100,13 @@ exports.createFlavor = async (req, res) => {
 exports.updateFlavor = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, category_id, price, stock } = req.body;
+    const { name, category_id } = req.body;
 
     const { data, error } = await supabase
       .from('flavors')
       .update({ 
         name, 
-        category_id, 
-        price: parseFloat(price), 
-        stock: parseInt(stock, 10) 
+        category_id
       })
       .eq('id', id)
       .select();
@@ -143,29 +139,6 @@ exports.deleteFlavor = async (req, res) => {
     res.json({ message: 'Sabor eliminado exitosamente' });
   } catch (error) {
     console.error('Error en deleteFlavor:', error);
-    res.status(500).json({ message: 'Error en el servidor', error: error.message });
-  }
-};
-
-// Actualizar stock de un sabor
-exports.updateStock = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { stock } = req.body;
-
-    const { data, error } = await supabase
-      .from('flavors')
-      .update({ stock: parseInt(stock, 10) })
-      .eq('id', id)
-      .select();
-
-    if (error) {
-      return res.status(400).json({ message: 'Error al actualizar stock', error: error.message });
-    }
-
-    res.json(data[0]);
-  } catch (error) {
-    console.error('Error en updateStock:', error);
     res.status(500).json({ message: 'Error en el servidor', error: error.message });
   }
 };

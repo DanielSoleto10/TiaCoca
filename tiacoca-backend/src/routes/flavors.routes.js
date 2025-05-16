@@ -9,6 +9,5 @@ router.get('/:id', flavorsController.getFlavorById);
 router.post('/', flavorsController.createFlavor);
 router.put('/:id', flavorsController.updateFlavor);
 router.delete('/:id', flavorsController.deleteFlavor);
-router.patch('/:id/stock', flavorsController.updateStock);
 
 module.exports = router;
