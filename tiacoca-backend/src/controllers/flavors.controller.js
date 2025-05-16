@@ -1,4 +1,4 @@
-const { supabase } = require('../app');
+const supabase = require('../utils/supabase');
 
 // Obtener todos los sabores
 exports.getAllFlavors = async (req, res) => {

@@ -1,4 +1,4 @@
-const { supabase } = require('../app');
+const supabase = require('../utils/supabase');
 
 // Obtener todas las categorías
 exports.getAllCategories = async (req, res) => {

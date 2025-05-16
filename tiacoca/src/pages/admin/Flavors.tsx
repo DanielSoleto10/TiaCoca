@@ -154,75 +154,75 @@ const Flavors = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Gestión de Sabores</h2>
+        <h2 className="text-2xl font-bold dark:text-white">Gestión de Sabores</h2>
         <button
           onClick={() => handleOpenModal()}
-          className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
+          className="px-4 py-2 text-white bg-primary-500 rounded-md hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700"
         >
           Nuevo Sabor
         </button>
       </div>
 
       {error && (
-        <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+        <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-700/20 dark:text-red-100">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="p-4 text-sm text-green-700 bg-green-100 rounded-lg">
+        <div className="p-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-700/20 dark:text-green-100">
           {success}
         </div>
       )}
 
       {loading ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-16 h-16 border-t-4 border-b-4 border-green-500 rounded-full animate-spin"></div>
+          <div className="w-16 h-16 border-t-4 border-b-4 border-primary-500 rounded-full animate-spin dark:border-primary-400"></div>
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-300">
+            <thead className="bg-gray-50 dark:bg-dark-300">
               <tr>
-                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                   Nombre
                 </th>
-                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                   Categoría
                 </th>
-                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                   Acciones
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200 dark:bg-dark-200 dark:divide-dark-300">
               {flavors.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={3} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                     No hay sabores registrados.
                   </td>
                 </tr>
               ) : (
                 flavors.map((flavor) => (
-                  <tr key={flavor.id}>
+                  <tr key={flavor.id} className="dark:hover:bg-dark-300">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{flavor.name}</div>
+                      <div className="text-sm text-gray-900 dark:text-white">{flavor.name}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
+                      <div className="text-sm text-gray-900 dark:text-white">
                         {flavor.categories?.name || getCategoryName(flavor.category_id)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
                         onClick={() => handleOpenModal(flavor)}
-                        className="px-3 py-1 mr-2 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                        className="px-3 py-1 mr-2 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
                       >
                         Editar
                       </button>
                       <button
                         onClick={() => handleDelete(flavor.id)}
-                        className="px-3 py-1 text-xs font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+                        className="px-3 py-1 text-xs font-medium text-white bg-red-600 rounded-md hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-500"
                       >
                         Eliminar
                       </button>
@@ -237,80 +237,75 @@ const Flavors = () => {
 
       {/* Modal para crear/editar sabor */}
       {showModal && (
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div className="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-              <form onSubmit={handleSubmit}>
-                <div className="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
-                  <h3 className="text-lg font-medium leading-6 text-gray-900">
-                    {isEditing ? 'Editar Sabor' : 'Nuevo Sabor'}
-                  </h3>
-                  
-                  {error && (
-                    <div className="p-4 mt-4 text-sm text-red-700 bg-red-100 rounded-lg">
-                      {error}
-                    </div>
-                  )}
-                  
-                  <div className="mt-4 space-y-4">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                        Nombre
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                        className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="category_id" className="block text-sm font-medium text-gray-700">
-                        Categoría
-                      </label>
-                      <select
-                        id="category_id"
-                        name="category_id"
-                        value={formData.category_id}
-                        onChange={handleInputChange}
-                        required
-                        className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                      >
-                        <option value="">Seleccionar categoría</option>
-                        {categories.map(category => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
+          <div className="fixed inset-0 bg-black bg-opacity-30 dark:bg-opacity-60" onClick={handleCloseModal}></div>
+          <div className="w-full max-w-lg p-6 mx-4 bg-white dark:bg-dark-100 rounded-lg shadow-xl z-50 relative">
+            <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">
+              {isEditing ? 'Editar Sabor' : 'Nuevo Sabor'}
+            </h3>
+            
+            {error && (
+              <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-700/20 dark:text-red-100">
+                {error}
+              </div>
+            )}
+            
+            <form onSubmit={handleSubmit}>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Nombre
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    autoFocus
+                    className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-black bg-white dark:text-white dark:bg-dark-300 dark:border-dark-400 dark:placeholder-gray-400"
+                  />
                 </div>
-                <div className="px-4 py-3 bg-gray-50 sm:px-6 sm:flex sm:flex-row-reverse">
-                  <button
-                    type="submit"
-                    className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
+                
+                <div>
+                  <label htmlFor="category_id" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Categoría
+                  </label>
+                  <select
+                    id="category_id"
+                    name="category_id"
+                    value={formData.category_id}
+                    onChange={handleInputChange}
+                    required
+                    className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-black bg-white dark:text-white dark:bg-dark-300 dark:border-dark-400"
                   >
-                    {isEditing ? 'Actualizar' : 'Crear'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleCloseModal}
-                    className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                  >
-                    Cancelar
-                  </button>
+                    <option value="">Seleccionar categoría</option>
+                    {categories.map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-              </form>
-            </div>
+              </div>
+              
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-dark-300 dark:text-gray-200 dark:border-dark-400 dark:hover:bg-dark-400"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-white bg-primary-500 rounded-md hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700"
+                >
+                  {isEditing ? 'Actualizar' : 'Crear'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -146,10 +146,10 @@ const Employees = () => {
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Gestión de Empleados</h2>
+        <h2 className="text-2xl font-bold dark:text-white">Gestión de Empleados</h2>
         <button
           onClick={() => handleOpenModal()}
-          className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
+          className="px-4 py-2 text-white bg-primary-500 rounded-md hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700"
         >
           Nuevo Empleado
         </button>
@@ -162,8 +162,8 @@ const Employees = () => {
         <Spinner />
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-300">
+            <thead className="bg-gray-50 dark:bg-dark-300">
               <tr>
                 <TH>Nombre</TH>
                 <TH>Email</TH>
@@ -173,23 +173,23 @@ const Employees = () => {
                 <TH>Acciones</TH>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200 dark:bg-dark-200 dark:divide-dark-300">
               {employees.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                     No hay empleados registrados.
                   </td>
                 </tr>
               ) : (
                 employees.map((emp) => (
-                  <tr key={emp.id}>
+                  <tr key={emp.id} className="dark:hover:bg-dark-300">
                     <TD>{emp.full_name ?? '—'}</TD>
                     <TD>{emp.email}</TD>
                     <TD>{emp.identity_card ?? '—'}</TD>
                     <TD>{fmt(emp.birth_date)}</TD>
                     <TD>
                       <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${emp.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${emp.role === 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'}`}
                       >
                         {emp.role === 'admin' ? 'Administrador' : 'Empleado'}
                       </span>
@@ -197,13 +197,13 @@ const Employees = () => {
                     <TD>
                       <button
                         onClick={() => handleOpenModal(emp)}
-                        className="px-3 py-1 mr-2 text-xs text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                        className="px-3 py-1 mr-2 text-xs text-white bg-blue-600 rounded-md hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
                       >
                         Editar
                       </button>
                       <button
                         onClick={() => handleDelete(emp.id)}
-                        className="px-3 py-1 text-xs text-white bg-red-600 rounded-md hover:bg-red-700"
+                        className="px-3 py-1 text-xs text-white bg-red-500 rounded-md hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-500"
                       >
                         Eliminar
                       </button>
@@ -231,21 +231,25 @@ const Employees = () => {
 
 /* ---------- UI aux ---------- */
 const Alert = ({ color, message }: { color: 'red' | 'green'; message: string }) => (
-  <div className={`p-4 text-sm rounded-lg ${color === 'red' ? 'text-red-700 bg-red-100' : 'text-green-700 bg-green-100'}`}>{message}</div>
+  <div className={`p-4 text-sm rounded-lg ${
+    color === 'red' 
+      ? 'text-red-700 bg-red-100 dark:bg-red-700/20 dark:text-red-100' 
+      : 'text-green-700 bg-green-100 dark:bg-green-700/20 dark:text-green-100'
+  }`}>{message}</div>
 );
 
 const Spinner = () => (
   <div className="flex items-center justify-center h-64">
-    <div className="w-16 h-16 border-t-4 border-b-4 border-green-500 rounded-full animate-spin" />
+    <div className="w-16 h-16 border-t-4 border-b-4 border-primary-500 rounded-full animate-spin dark:border-primary-400" />
   </div>
 );
 
 const TH: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <th className="px-6 py-3 text-xs font-medium text-left text-gray-500 uppercase">{children}</th>
+  <th className="px-6 py-3 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-300">{children}</th>
 );
 
 const TD: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">{children}</td>
+  <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap dark:text-white">{children}</td>
 );
 
 /* ---------- Input Component ---------- */
@@ -269,7 +273,7 @@ const Input: React.FC<InputProps> = ({
   required = false,
 }) => (
   <div className="mb-4">
-    <label htmlFor={name} className="block mb-2 text-sm font-medium text-gray-700">
+    <label htmlFor={name} className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
       {label}
     </label>
     <input
@@ -280,7 +284,7 @@ const Input: React.FC<InputProps> = ({
       onChange={onChange}
       disabled={disabled}
       required={required}
-      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-black bg-white dark:text-white dark:bg-dark-300 dark:border-dark-400 dark:placeholder-gray-400"
     />
   </div>
 );
@@ -295,9 +299,12 @@ interface ModalProps {
 }
 
 const EmployeeModal: React.FC<ModalProps> = ({ isEditing, formData, onChange, onSubmit, onClose }) => (
-  <div className="fixed inset-0 z-10 flex items-center justify-center overflow-y-auto bg-black/30">
-    <div className="w-full max-w-lg p-6 mx-4 bg-white rounded-lg shadow-xl">
-      <h3 className="mb-4 text-lg font-medium text-gray-900">{isEditing ? 'Editar Empleado' : 'Nuevo Empleado'}</h3>
+  <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-30 dark:bg-opacity-60" onClick={onClose}></div>
+    <div className="w-full max-w-lg p-6 mx-4 bg-white dark:bg-dark-100 rounded-lg shadow-xl z-50 relative">
+      <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">
+        {isEditing ? 'Editar Empleado' : 'Nuevo Empleado'}
+      </h3>
       <form onSubmit={onSubmit} className="space-y-4">
         <Input 
           label="Email" 
@@ -344,7 +351,7 @@ const EmployeeModal: React.FC<ModalProps> = ({ isEditing, formData, onChange, on
         />
         
         <div className="mb-4">
-          <label htmlFor="role" className="block mb-2 text-sm font-medium text-gray-700">
+          <label htmlFor="role" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             Rol
           </label>
           <select
@@ -352,7 +359,7 @@ const EmployeeModal: React.FC<ModalProps> = ({ isEditing, formData, onChange, on
             name="role"
             value={formData.role}
             onChange={onChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-black bg-white dark:text-white dark:bg-dark-300 dark:border-dark-400"
           >
             <option value="employee">Empleado</option>
             <option value="admin">Administrador</option>
@@ -363,13 +370,13 @@ const EmployeeModal: React.FC<ModalProps> = ({ isEditing, formData, onChange, on
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+            className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-dark-300 dark:text-gray-200 dark:hover:bg-dark-400"
           >
             Cancelar
           </button>
           <button
             type="submit"
-            className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
+            className="px-4 py-2 text-white bg-primary-500 rounded-md hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700"
           >
             {isEditing ? 'Actualizar' : 'Crear'}
           </button>
