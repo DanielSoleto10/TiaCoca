@@ -22,6 +22,7 @@ app.use('/api/categories', require('./routes/categories.routes'));
 app.use('/api/flavors', require('./routes/flavors.routes'));
 app.use('/api/orders', require('./routes/orders.routes'));
 app.use('/api/reports', require('./routes/reports.routes'));
+app.use('/api/packages', require('./routes/packages.routes')); // Añadida nueva ruta para paquetes
 
 // Ruta de prueba
 app.get('/', (req, res) => {
