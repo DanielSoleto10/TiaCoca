@@ -1,12 +1,13 @@
-const express = require('express');
+import express from 'express';
+import { getSalesByDay, getSalesSummary, getSalesByFlavor, getCashierClosings, createCashierClosing } from '../controllers/reports.controller.js';
+
 const router = express.Router();
-const reportsController = require('../controllers/reports.controller');
 
 // Rutas de reportes
-router.get('/sales/day', reportsController.getSalesByDay);
-router.get('/sales/summary', reportsController.getSalesSummary);
-router.get('/sales/flavor', reportsController.getSalesByFlavor);
-router.get('/cashier/closings', reportsController.getCashierClosings);
-router.post('/cashier/closings', reportsController.createCashierClosing);
+router.get('/sales/day', getSalesByDay);
+router.get('/sales/summary', getSalesSummary);
+router.get('/sales/flavor', getSalesByFlavor);
+router.get('/cashier/closings', getCashierClosings);
+router.post('/cashier/closings', createCashierClosing);
 
-module.exports = router;
+export default router;

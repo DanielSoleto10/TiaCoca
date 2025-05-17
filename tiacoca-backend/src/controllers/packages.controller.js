@@ -1,7 +1,7 @@
-const supabase = require('../utils/supabase');
+import { supabase } from '../app.js';
 
 // Obtener todos los paquetes
-exports.getAllPackages = async (req, res) => {
+export const getAllPackages = async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('packages')
@@ -24,7 +24,7 @@ exports.getAllPackages = async (req, res) => {
 };
 
 // Obtener un paquete por ID
-exports.getPackageById = async (req, res) => {
+export const getPackageById = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -50,7 +50,7 @@ exports.getPackageById = async (req, res) => {
 };
 
 // Crear un nuevo paquete
-exports.createPackage = async (req, res) => {
+export const createPackage = async (req, res) => {
   try {
     const { name, price, weight, weight_unit } = req.body;
 
@@ -87,7 +87,7 @@ exports.createPackage = async (req, res) => {
 };
 
 // Actualizar un paquete
-exports.updatePackage = async (req, res) => {
+export const updatePackage = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, price, weight, weight_unit } = req.body;
@@ -121,7 +121,7 @@ exports.updatePackage = async (req, res) => {
 };
 
 // Eliminar un paquete
-exports.deletePackage = async (req, res) => {
+export const deletePackage = async (req, res) => {
   try {
     const { id } = req.params;
 

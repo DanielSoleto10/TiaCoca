@@ -1,7 +1,7 @@
-const supabase = require('../utils/supabase');
+import supabase from '../utils/supabase.js';
 
 // Obtener todos los sabores
-exports.getAllFlavors = async (req, res) => {
+export const getAllFlavors = async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('flavors')
@@ -23,7 +23,7 @@ exports.getAllFlavors = async (req, res) => {
 };
 
 // Obtener sabores por categoría
-exports.getFlavorsByCategory = async (req, res) => {
+export const getFlavorsByCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
 
@@ -48,7 +48,7 @@ exports.getFlavorsByCategory = async (req, res) => {
 };
 
 // Obtener un sabor por ID
-exports.getFlavorById = async (req, res) => {
+export const getFlavorById = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -73,7 +73,7 @@ exports.getFlavorById = async (req, res) => {
 };
 
 // Crear un nuevo sabor
-exports.createFlavor = async (req, res) => {
+export const createFlavor = async (req, res) => {
   try {
     const { name, category_id } = req.body;
 
@@ -97,7 +97,7 @@ exports.createFlavor = async (req, res) => {
 };
 
 // Actualizar un sabor
-exports.updateFlavor = async (req, res) => {
+export const updateFlavor = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, category_id } = req.body;
@@ -123,7 +123,7 @@ exports.updateFlavor = async (req, res) => {
 };
 
 // Eliminar un sabor
-exports.deleteFlavor = async (req, res) => {
+export const deleteFlavor = async (req, res) => {
   try {
     const { id } = req.params;
 

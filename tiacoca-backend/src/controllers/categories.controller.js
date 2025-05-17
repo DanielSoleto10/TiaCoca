@@ -1,7 +1,7 @@
-const supabase = require('../utils/supabase');
+import supabase from '../utils/supabase.js';
 
 // Obtener todas las categorías
-exports.getAllCategories = async (req, res) => {
+export const getAllCategories = async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('categories')
@@ -20,7 +20,7 @@ exports.getAllCategories = async (req, res) => {
 };
 
 // Obtener una categoría por ID
-exports.getCategoryById = async (req, res) => {
+export const getCategoryById = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -42,7 +42,7 @@ exports.getCategoryById = async (req, res) => {
 };
 
 // Crear una nueva categoría
-exports.createCategory = async (req, res) => {
+export const createCategory = async (req, res) => {
   try {
     const { name } = req.body;
 
@@ -63,7 +63,7 @@ exports.createCategory = async (req, res) => {
 };
 
 // Actualizar una categoría
-exports.updateCategory = async (req, res) => {
+export const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
@@ -86,7 +86,7 @@ exports.updateCategory = async (req, res) => {
 };
 
 // Eliminar una categoría
-exports.deleteCategory = async (req, res) => {
+export const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
 

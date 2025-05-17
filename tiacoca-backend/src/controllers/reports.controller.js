@@ -1,7 +1,7 @@
-const { supabase } = require('../app');
+import { supabase } from '../app.js';
 
 // Obtener ventas por día
-exports.getSalesByDay = async (req, res) => {
+export const getSalesByDay = async (req, res) => {
   try {
     const { days = 7 } = req.query;
     
@@ -52,7 +52,7 @@ exports.getSalesByDay = async (req, res) => {
 };
 
 // Obtener resumen de ventas
-exports.getSalesSummary = async (req, res) => {
+export const getSalesSummary = async (req, res) => {
   try {
     // Obtener fecha actual
     const today = new Date();
@@ -123,7 +123,7 @@ exports.getSalesSummary = async (req, res) => {
 };
 
 // Obtener cierres de caja
-exports.getCashierClosings = async (req, res) => {
+export const getCashierClosings = async (req, res) => {
   try {
     const { limit = 5 } = req.query;
     
@@ -145,7 +145,7 @@ exports.getCashierClosings = async (req, res) => {
 };
 
 // Crear cierre de caja
-exports.createCashierClosing = async (req, res) => {
+export const createCashierClosing = async (req, res) => {
   try {
     const { total_sales, total_orders, completed_orders, pending_orders, cancelled_orders, notes } = req.body;
     
@@ -174,7 +174,7 @@ exports.createCashierClosing = async (req, res) => {
 };
 
 // Obtener ventas por sabor
-exports.getSalesByFlavor = async (req, res) => {
+export const getSalesByFlavor = async (req, res) => {
   try {
     const { days = 30 } = req.query;
     

@@ -14,6 +14,7 @@ import Flavors from './pages/admin/Flavors';
 import AdminOrders from './pages/admin/Orders';
 import Reports from './pages/admin/Reports';
 import Cashier from './pages/admin/Cashier';
+import Packages from './pages/admin/Packages';
 
 // Employee pages
 import EmployeeDashboard from './pages/employee/Dashboard';
@@ -63,6 +64,7 @@ function AppRoutes() {
           <Route path="orders" element={<AdminOrders />} />
           <Route path="reports" element={<Reports />} />
           <Route path="cashier" element={<Cashier />} />
+          <Route path="packages" element={<Packages />} />
         </Route>
         
         {/* Rutas de empleado */}

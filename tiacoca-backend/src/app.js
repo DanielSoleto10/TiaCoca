@@ -1,11 +1,16 @@
-const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
-const dotenv = require('dotenv');
-const supabase = require('../src/utils/supabase'); // Importar supabase desde el archivo separado
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
+import dotenv from 'dotenv';
+import { createClient } from '@supabase/supabase-js';
 
 // Cargar variables de entorno
 dotenv.config();
+
+// Inicializar cliente Supabase
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Inicializar Express
 const app = express();
@@ -15,14 +20,23 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
+// Importar rutas - Nota que ahora incluimos la extensión .js
+import authRoutes from './routes/auth.routes.js';
+import usersRoutes from './routes/users.routes.js';
+import categoriesRoutes from './routes/categories.routes.js';
+import flavorsRoutes from './routes/flavors.routes.js';
+import ordersRoutes from './routes/orders.routes.js';
+import reportsRoutes from './routes/reports.routes.js';
+import packagesRoutes from './routes/packages.routes.js';
+
 // Rutas
-app.use('/api/auth', require('./routes/auth.routes'));
-app.use('/api/users', require('./routes/users.routes'));
-app.use('/api/categories', require('./routes/categories.routes'));
-app.use('/api/flavors', require('./routes/flavors.routes'));
-app.use('/api/orders', require('./routes/orders.routes'));
-app.use('/api/reports', require('./routes/reports.routes'));
-app.use('/api/packages', require('./routes/packages.routes')); // Añadida nueva ruta para paquetes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/categories', categoriesRoutes);
+app.use('/api/flavors', flavorsRoutes);
+app.use('/api/orders', ordersRoutes);
+app.use('/api/reports', reportsRoutes);
+app.use('/api/packages', packagesRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {
@@ -39,4 +53,4 @@ app.use((err, req, res, next) => {
 });
 
 // Exportar app y supabase
-module.exports = { app, supabase };
+export { app, supabase };

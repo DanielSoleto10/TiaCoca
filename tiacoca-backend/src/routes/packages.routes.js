@@ -1,13 +1,8 @@
-import { Router } from 'express';
-import {
-  getAllPackages,
-  getPackageById,
-  createPackage,
-  updatePackage,
-  deletePackage
-} from '../controllers/packages.controller';
 
-const router = Router();
+import express from 'express';
+import { getAllPackages, getPackageById, createPackage, updatePackage, deletePackage } from '../controllers/packages.controller.js';
+
+const router = express.Router();
 
 // Rutas de paquetes
 router.get('/', getAllPackages);

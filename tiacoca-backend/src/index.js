@@ -1,7 +1,4 @@
-const { app, supabase } = require('./app');
-
-// Verificar que supabase está inicializado
-console.log('Supabase inicializado en index:', !!supabase);
+import { app } from './app.js';
 
 const PORT = process.env.PORT || 5000;
 

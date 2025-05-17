@@ -1,7 +1,7 @@
-const { supabase } = require('../app');
+import { supabase } from '../app.js';
 
 // Obtener todos los pedidos
-exports.getAllOrders = async (req, res) => {
+export const getAllOrders = async (req, res) => {
   try {
     const { status } = req.query;
     
@@ -31,7 +31,7 @@ exports.getAllOrders = async (req, res) => {
 };
 
 // Obtener pedidos por empleado
-exports.getOrdersByEmployee = async (req, res) => {
+export const getOrdersByEmployee = async (req, res) => {
   try {
     const { employeeId } = req.params;
     const { status } = req.query;
@@ -63,7 +63,7 @@ exports.getOrdersByEmployee = async (req, res) => {
 };
 
 // Obtener un pedido por ID
-exports.getOrderById = async (req, res) => {
+export const getOrderById = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -88,7 +88,7 @@ exports.getOrderById = async (req, res) => {
 };
 
 // Crear un nuevo pedido
-exports.createOrder = async (req, res) => {
+export const createOrder = async (req, res) => {
   try {
     const { 
       client_name, 
@@ -136,7 +136,7 @@ exports.createOrder = async (req, res) => {
 };
 
 // Actualizar estado de un pedido
-exports.updateOrderStatus = async (req, res) => {
+export const updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -162,7 +162,7 @@ exports.updateOrderStatus = async (req, res) => {
 };
 
 // Asignar pedido a un empleado
-exports.assignOrder = async (req, res) => {
+export const assignOrder = async (req, res) => {
   try {
     const { id } = req.params;
     const { employeeId } = req.body;

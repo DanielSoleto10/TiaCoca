@@ -2,6 +2,7 @@
   "name": "tiacoca-backend",
   "version": "1.0.0",
   "description": "Backend para el proyecto Tiacoca",
+  "type": "module",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/index.js",

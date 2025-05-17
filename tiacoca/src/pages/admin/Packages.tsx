@@ -1,4 +1,5 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { getAllPackages, createPackage, updatePackage, deletePackage } from '../../services/packages';
 
 // Definición de interfaces
 interface Package {
@@ -6,40 +7,15 @@ interface Package {
   price: number;
   weight: number;
   weight_unit: string;
-  name: string; // Opcional: para darle un nombre al paquete (ej: "Pequeño", "Mediano", etc.)
+  name: string;
 }
 
 interface PackageFormData {
   name: string;
-  price: string; // lo manejamos como string en el formulario para facilitar la entrada
-  weight: string; // lo manejamos como string en el formulario
+  price: string;
+  weight: string;
   weight_unit: string;
 }
-
-// Implementa estos servicios en tu carpeta services
-// import { getAllPackages, createPackage, updatePackage, deletePackage } from '../../services/packages';
-
-// Simulaciones temporales
-const getAllPackages = async (): Promise<Package[]> => {
-  // Simulación - reemplazar con llamada real a la API
-  return Promise.resolve([]);
-};
-
-const createPackage = async (data: Omit<Package, 'id'>): Promise<Package> => {
-  // Simulación - reemplazar con llamada real a la API
-  return Promise.resolve({ id: Date.now().toString(), ...data });
-};
-
-const updatePackage = async (id: string, data: Partial<Omit<Package, 'id'>>): Promise<Package> => {
-  // Simulación - reemplazar con llamada real a la API
-  return Promise.resolve({ id, ...data } as Package);
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const deletePackage = async (_id: string): Promise<void> => {
-  // Simulación - reemplazar con llamada real a la API
-  return Promise.resolve();
-};
 
 const Packages = () => {
   const [packages, setPackages] = useState<Package[]>([]);

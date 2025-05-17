@@ -1,13 +1,14 @@
-const express = require('express');
+import express from 'express';
+import { getAllFlavors, getFlavorsByCategory, getFlavorById, createFlavor, updateFlavor, deleteFlavor } from '../controllers/flavors.controller.js';
+
 const router = express.Router();
-const flavorsController = require('../controllers/flavors.controller');
 
 // Rutas de sabores
-router.get('/', flavorsController.getAllFlavors);
-router.get('/category/:categoryId', flavorsController.getFlavorsByCategory);
-router.get('/:id', flavorsController.getFlavorById);
-router.post('/', flavorsController.createFlavor);
-router.put('/:id', flavorsController.updateFlavor);
-router.delete('/:id', flavorsController.deleteFlavor);
+router.get('/', getAllFlavors);
+router.get('/category/:categoryId', getFlavorsByCategory);
+router.get('/:id', getFlavorById);
+router.post('/', createFlavor);
+router.put('/:id', updateFlavor);
+router.delete('/:id', deleteFlavor);
 
-module.exports = router;
+export default router;

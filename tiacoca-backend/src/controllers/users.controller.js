@@ -1,8 +1,8 @@
 // Importar Supabase desde utils/supabase
-const supabase = require('../utils/supabase');
+import supabase from '../utils/supabase.js';
 
 // Obtener todos los usuarios (empleados y administradores)
-exports.getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   try {
     console.log('Ejecutando getAllUsers, supabase disponible:', !!supabase);
     
@@ -28,7 +28,7 @@ exports.getAllUsers = async (req, res) => {
 };
 
 // Obtener un usuario por ID
-exports.getUserById = async (req, res) => {
+export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -50,7 +50,7 @@ exports.getUserById = async (req, res) => {
 };
 
 // Actualizar un usuario
-exports.updateUser = async (req, res) => {
+export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
     const { full_name, birth_date, identity_card, role } = req.body;
@@ -72,7 +72,7 @@ exports.updateUser = async (req, res) => {
 };
 
 // Eliminar un usuario
-exports.deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
 

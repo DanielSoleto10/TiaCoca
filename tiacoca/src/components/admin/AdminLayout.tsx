@@ -109,6 +109,17 @@ const AdminLayout: React.FC = () => {
                 </li>
                 <li>
                   <Link
+                    to="/admin/packages"
+                    className={`flex items-center p-2 rounded hover:bg-green-600 transition-colors ${isActive('/admin/packages') ? 'bg-green-600' : ''}`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M12 4h.01M12 16h.01M4 12h16m-8-8h8a2 2 0 012 2v8a2 2 0 01-2 2h-8a2 2 0 01-2-2V6a2 2 0 012-2z" />
+                    </svg>
+                    {isSidebarOpen && <span className="ml-3">Paquetes</span>}
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     to="/admin/categories"
                     className={`flex items-center p-2 rounded hover:bg-green-600 transition-colors ${isActive('/admin/categories') ? 'bg-green-600' : ''}`}
                   >

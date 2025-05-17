@@ -1,8 +1,8 @@
-const supabase = require('../utils/supabase');
-const jwt = require('jsonwebtoken');
+import supabase from '../utils/supabase.js';
+import jwt from 'jsonwebtoken';
 
 // Iniciar sesión
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -55,7 +55,7 @@ exports.login = async (req, res) => {
 };
 
 // Registrar usuario (solo para administradores)
-exports.register = async (req, res) => {
+export const register = async (req, res) => {
   try {
     const { email, password, fullName, birthDate, identityCard, role } = req.body;
 
@@ -111,7 +111,7 @@ exports.register = async (req, res) => {
 };
 
 // Verificar token
-exports.verifyToken = async (req, res) => {
+export const verifyToken = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -128,6 +128,6 @@ exports.verifyToken = async (req, res) => {
 };
 
 // Cerrar sesión
-exports.logout = async (req, res) => {
+export const logout = async (req, res) => {
   res.json({ message: 'Sesión cerrada exitosamente' });
 };
