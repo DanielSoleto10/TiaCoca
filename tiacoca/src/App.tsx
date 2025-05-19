@@ -15,6 +15,7 @@ import AdminOrders from './pages/admin/Orders';
 import Reports from './pages/admin/Reports';
 import Cashier from './pages/admin/Cashier';
 import Packages from './pages/admin/Packages';
+import CrushedTypes from './pages/admin/CrushedTypes';
 
 // Employee pages
 import EmployeeDashboard from './pages/employee/Dashboard';
@@ -65,6 +66,7 @@ function AppRoutes() {
           <Route path="reports" element={<Reports />} />
           <Route path="cashier" element={<Cashier />} />
           <Route path="packages" element={<Packages />} />
+          <Route path="crushed-types" element={<CrushedTypes />} />
         </Route>
         
         {/* Rutas de empleado */}

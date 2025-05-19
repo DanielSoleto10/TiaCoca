@@ -28,6 +28,7 @@ import flavorsRoutes from './routes/flavors.routes.js';
 import ordersRoutes from './routes/orders.routes.js';
 import reportsRoutes from './routes/reports.routes.js';
 import packagesRoutes from './routes/packages.routes.js';
+import crushedTypesRoutes from './routes/crushedTypes.routes.js';
 
 // Rutas
 app.use('/api/auth', authRoutes);
@@ -37,6 +38,7 @@ app.use('/api/flavors', flavorsRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/packages', packagesRoutes);
+app.use('/api/crushed-types', crushedTypesRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {

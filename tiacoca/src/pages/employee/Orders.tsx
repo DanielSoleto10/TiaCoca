@@ -7,14 +7,11 @@ interface Order {
   id: string;
   created_at: string;
   status: OrderStatus;
-  client_name: string;
-  client_last_name?: string;
-  client_phone?: string;
-  delivery_address?: string;
+  full_name: string;
   flavors?: string[];
   sweetness?: string;
   crushed_type?: string;
-  package?: string;
+  package_type?: string; // Cambiado de package a package_type
   amount?: number;
   notes?: string;
 }
@@ -180,9 +177,7 @@ const Orders = () => {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <h4 className="mb-2 text-sm font-medium text-gray-500">Información del Cliente</h4>
-                    <p className="text-sm"><span className="font-medium">Nombre:</span> {order.client_name} {order.client_last_name || ''}</p>
-                    <p className="text-sm"><span className="font-medium">Teléfono:</span> {order.client_phone || 'No disponible'}</p>
-                    <p className="text-sm"><span className="font-medium">Dirección:</span> {order.delivery_address || 'No disponible'}</p>
+                    <p className="text-sm"><span className="font-medium">Nombre:</span> {order.full_name}</p>
                   </div>
                   
                   <div>
@@ -190,7 +185,7 @@ const Orders = () => {
                     <p className="text-sm"><span className="font-medium">Sabores:</span> {order.flavors?.join(', ') || 'No disponible'}</p>
                     <p className="text-sm"><span className="font-medium">Dulzura:</span> {order.sweetness || 'No disponible'}</p>
                     <p className="text-sm"><span className="font-medium">Machucado:</span> {order.crushed_type || 'No disponible'}</p>
-                    <p className="text-sm"><span className="font-medium">Paquete:</span> {order.package || 'No disponible'}</p>
+                    <p className="text-sm"><span className="font-medium">Paquete:</span> {order.package_type || 'No disponible'}</p>
                     <p className="text-sm"><span className="font-medium">Monto:</span> {order.amount?.toFixed(2) || '0.00'} Bs</p>
                   </div>
                 </div>

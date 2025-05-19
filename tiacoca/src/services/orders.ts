@@ -2,14 +2,11 @@ import api from './api';
 
 export interface Order {
   id: string;
-  client_name: string;
-  client_last_name: string;
-  client_phone?: string;
-  delivery_address?: string;
+  full_name: string;
   flavors?: string[];
   sweetness?: string;
   crushed_type?: string;
-  package?: string;
+  package_type?: string; // Cambiado de package a package_type
   amount?: number;
   notes?: string;
   assigned_to?: string;

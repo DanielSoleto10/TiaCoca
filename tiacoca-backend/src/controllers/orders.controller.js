@@ -91,14 +91,11 @@ export const getOrderById = async (req, res) => {
 export const createOrder = async (req, res) => {
   try {
     const { 
-      client_name, 
-      client_last_name, 
-      client_phone, 
-      delivery_address, 
+      full_name, 
       flavors, 
       sweetness, 
       crushed_type, 
-      package_type, 
+      package_type, // Cambiado de 'package' a 'package_type'
       amount, 
       notes, 
       assigned_to 
@@ -107,14 +104,11 @@ export const createOrder = async (req, res) => {
     const { data, error } = await supabase
       .from('orders')
       .insert([{ 
-        client_name, 
-        client_last_name, 
-        client_phone, 
-        delivery_address, 
+        full_name, 
         flavors, 
         sweetness, 
         crushed_type, 
-        package_type, 
+        package_type, // Cambiado de 'package' a 'package_type'
         amount: parseFloat(amount), 
         notes, 
         assigned_to,
