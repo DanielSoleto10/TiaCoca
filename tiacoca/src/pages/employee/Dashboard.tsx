@@ -2,8 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getOrdersByEmployee } from '../../services/orders';
 
-// Definición de interfaces
-interface Order {
+// Definición de tipo de estado
+type OrderStatus = 'pending' | 'completed' | 'cancelled';
+
+// Interfaz Order adaptada para el componente
+interface OrderDisplay {
   id: string;
   client_name: string;
   client_last_name?: string;
@@ -11,8 +14,6 @@ interface Order {
   status: OrderStatus;
   amount?: number;
 }
-
-type OrderStatus = 'pending' | 'completed' | 'cancelled';
 
 interface Stats {
   pending: number;
@@ -24,7 +25,7 @@ interface Stats {
 const Dashboard = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderDisplay[]>([]);
   const [error, setError] = useState('');
   const [stats, setStats] = useState<Stats>({
     pending: 0,
@@ -39,12 +40,29 @@ const Dashboard = () => {
       
       setLoading(true);
       const data = await getOrdersByEmployee(user.id);
-      setOrders(data as Order[]);
       
-      // Calcular estadísticas
-      const pending = data.filter((order: Order) => order.status === 'pending').length;
-      const completed = data.filter((order: Order) => order.status === 'completed').length;
-      const cancelled = data.filter((order: Order) => order.status === 'cancelled').length;
+      // Transformar los datos del servicio al formato que espera el componente
+      const formattedOrders: OrderDisplay[] = data.map(order => {
+        // Extraer nombre y apellido de full_name (suponiendo formato "Nombre Apellido")
+        const nameParts = order.full_name.split(' ');
+        const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+        
+        return {
+          id: order.id,
+          client_name: nameParts[0],
+          client_last_name: lastName || undefined,
+          created_at: order.created_at,
+          status: order.status,
+          amount: order.amount
+        };
+      });
+      
+      setOrders(formattedOrders);
+      
+      // Calcular estadísticas con los datos recibidos directamente
+      const pending = data.filter(order => order.status === 'pending').length;
+      const completed = data.filter(order => order.status === 'completed').length;
+      const cancelled = data.filter(order => order.status === 'cancelled').length;
       
       setStats({
         pending,

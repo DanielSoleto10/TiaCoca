@@ -41,17 +41,17 @@ const AdminLayout: React.FC = () => {
   };
 
   return (
-    <div className={`flex h-screen ${darkMode ? 'dark bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
       {/* Sidebar */}
-      <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} ${darkMode ? 'bg-green-900' : 'bg-green-700'} text-white transition-all duration-300 ease-in-out fixed h-full z-10`}>
-        <div className="flex items-center justify-between p-4 border-b border-green-600">
+      <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-green-700 dark:bg-green-900 text-white transition-all duration-300 ease-in-out fixed h-full z-10`}>
+        <div className="flex items-center justify-between p-4 border-b border-green-600 dark:border-green-700">
           <h2 className={`font-bold transition-opacity duration-200 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>
             Tia Coca
           </h2>
           <div className="flex items-center space-x-2">
             <button 
               onClick={toggleDarkMode} 
-              className="p-1 rounded hover:bg-green-600"
+              className="p-1 rounded hover:bg-green-600 dark:hover:bg-green-800"
               title={darkMode ? "Modo claro" : "Modo oscuro"}
             >
               {darkMode ? (
@@ -66,7 +66,7 @@ const AdminLayout: React.FC = () => {
             </button>
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-1 rounded hover:bg-green-600"
+              className="p-1 rounded hover:bg-green-600 dark:hover:bg-green-800"
             >
               {isSidebarOpen ? (
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -88,7 +88,7 @@ const AdminLayout: React.FC = () => {
                 <li className="mb-6">
                   <Link
                     to="/admin/dashboard"
-                    className={`flex items-center p-2 rounded hover:bg-green-600 transition-colors ${isActive('/admin/dashboard') ? 'bg-green-600' : ''}`}
+                    className={`flex items-center p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors ${isActive('/admin/dashboard') ? 'bg-green-600 dark:bg-green-800' : ''}`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -99,7 +99,7 @@ const AdminLayout: React.FC = () => {
                 <li>
                   <Link
                     to="/admin/employees"
-                    className={`flex items-center p-2 rounded hover:bg-green-600 transition-colors ${isActive('/admin/employees') ? 'bg-green-600' : ''}`}
+                    className={`flex items-center p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors ${isActive('/admin/employees') ? 'bg-green-600 dark:bg-green-800' : ''}`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -110,7 +110,7 @@ const AdminLayout: React.FC = () => {
                 <li>
                   <Link
                     to="/admin/packages"
-                    className={`flex items-center p-2 rounded hover:bg-green-600 transition-colors ${isActive('/admin/packages') ? 'bg-green-600' : ''}`}
+                    className={`flex items-center p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors ${isActive('/admin/packages') ? 'bg-green-600 dark:bg-green-800' : ''}`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M12 4h.01M12 16h.01M4 12h16m-8-8h8a2 2 0 012 2v8a2 2 0 01-2 2h-8a2 2 0 01-2-2V6a2 2 0 012-2z" />
@@ -121,7 +121,7 @@ const AdminLayout: React.FC = () => {
                 <li>
                   <Link
                     to="/admin/categories"
-                    className={`flex items-center p-2 rounded hover:bg-green-600 transition-colors ${isActive('/admin/categories') ? 'bg-green-600' : ''}`}
+                    className={`flex items-center p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors ${isActive('/admin/categories') ? 'bg-green-600 dark:bg-green-800' : ''}`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -132,7 +132,7 @@ const AdminLayout: React.FC = () => {
                 <li>
                   <Link
                     to="/admin/flavors"
-                    className={`flex items-center p-2 rounded hover:bg-green-600 transition-colors ${isActive('/admin/flavors') ? 'bg-green-600' : ''}`}
+                    className={`flex items-center p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors ${isActive('/admin/flavors') ? 'bg-green-600 dark:bg-green-800' : ''}`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -143,7 +143,7 @@ const AdminLayout: React.FC = () => {
                 <li>
                   <Link
                     to="/admin/crushed-types"
-                    className={`flex items-center p-2 rounded hover:bg-green-600 transition-colors ${isActive('/admin/crushed-types') ? 'bg-green-600' : ''}`}
+                    className={`flex items-center p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors ${isActive('/admin/crushed-types') ? 'bg-green-600 dark:bg-green-800' : ''}`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
@@ -154,7 +154,7 @@ const AdminLayout: React.FC = () => {
                 <li>
                   <Link
                     to="/admin/orders"
-                    className={`flex items-center p-2 rounded hover:bg-green-600 transition-colors ${isActive('/admin/orders') ? 'bg-green-600' : ''}`}
+                    className={`flex items-center p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors ${isActive('/admin/orders') ? 'bg-green-600 dark:bg-green-800' : ''}`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
@@ -165,7 +165,7 @@ const AdminLayout: React.FC = () => {
                 <li>
                   <Link
                     to="/admin/reports"
-                    className={`flex items-center p-2 rounded hover:bg-green-600 transition-colors ${isActive('/admin/reports') ? 'bg-green-600' : ''}`}
+                    className={`flex items-center p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors ${isActive('/admin/reports') ? 'bg-green-600 dark:bg-green-800' : ''}`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -176,7 +176,7 @@ const AdminLayout: React.FC = () => {
                 <li>
                   <Link
                     to="/admin/cashier"
-                    className={`flex items-center p-2 rounded hover:bg-green-600 transition-colors ${isActive('/admin/cashier') ? 'bg-green-600' : ''}`}
+                    className={`flex items-center p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors ${isActive('/admin/cashier') ? 'bg-green-600 dark:bg-green-800' : ''}`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -193,7 +193,7 @@ const AdminLayout: React.FC = () => {
                 <li>
                   <Link
                     to="/employee/dashboard"
-                    className={`flex items-center p-2 rounded hover:bg-green-600 transition-colors ${isActive('/employee/dashboard') ? 'bg-green-600' : ''}`}
+                    className={`flex items-center p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors ${isActive('/employee/dashboard') ? 'bg-green-600 dark:bg-green-800' : ''}`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -204,7 +204,7 @@ const AdminLayout: React.FC = () => {
                 <li>
                   <Link
                     to="/employee/orders"
-                    className={`flex items-center p-2 rounded hover:bg-green-600 transition-colors ${isActive('/employee/orders') ? 'bg-green-600' : ''}`}
+                    className={`flex items-center p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors ${isActive('/employee/orders') ? 'bg-green-600 dark:bg-green-800' : ''}`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
@@ -216,10 +216,10 @@ const AdminLayout: React.FC = () => {
             )}
           </ul>
         </nav>
-        <div className="absolute bottom-0 w-full p-4 border-t border-green-600">
+        <div className="absolute bottom-0 w-full p-4 border-t border-green-600 dark:border-green-700">
           <button 
             onClick={handleLogout} 
-            className="flex items-center w-full p-2 rounded hover:bg-green-600 transition-colors"
+            className="flex items-center w-full p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -231,18 +231,18 @@ const AdminLayout: React.FC = () => {
 
       {/* Main content */}
       <div className={`flex-1 overflow-auto ${isSidebarOpen ? 'ml-64' : 'ml-20'} transition-all duration-300`}>
-        <header className={`flex items-center justify-between p-4 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow`}>
-          <h1 className="text-xl font-semibold">
+        <header className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 shadow border-b dark:border-gray-700">
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
             Tia Coca - {isAdmin ? 'Panel de Administración' : 'Panel de Empleado'}
           </h1>
           <div className="flex items-center space-x-4">
-            <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <span className="text-sm text-gray-600 dark:text-gray-300">
               {/* Usar el email en lugar de full_name para evitar el error */}
               {user?.email} ({isAdmin ? 'Admin' : 'Empleado'})
             </span>
           </div>
         </header>
-        <main className={`p-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-50'} min-h-screen`}>
+        <main className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
           <Outlet />
         </main>
       </div>

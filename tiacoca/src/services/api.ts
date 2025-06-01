@@ -1,9 +1,11 @@
+// frontend-admin/src/services/api.ts
 import axios from 'axios';
 import { getToken, removeToken } from './auth';
 
 // Crear instancia de axios
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  // CAMBIO: usar puerto 5001 para el backend admin
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api', // ← CAMBIO de 5000 a 5001
   headers: {
     'Content-Type': 'application/json',
   },
