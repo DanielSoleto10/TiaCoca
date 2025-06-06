@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllCrushedTypes, getCrushedTypeById, createCrushedType, updateCrushedType, deleteCrushedType } from '../controllers/crushedTypes.controller.js';
+import { getAllCrushedTypes, getCrushedTypeById, createCrushedType, updateCrushedType, deleteCrushedType } from '../controller/crushedTypes.controller.js';
 
 const router = express.Router();
 

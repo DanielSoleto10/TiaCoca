@@ -49,8 +49,8 @@ const AdminLayout: React.FC = () => {
             Tia Coca
           </h2>
           <div className="flex items-center space-x-2">
-            <button 
-              onClick={toggleDarkMode} 
+            <button
+              onClick={toggleDarkMode}
               className="p-1 rounded hover:bg-green-600 dark:hover:bg-green-800"
               title={darkMode ? "Modo claro" : "Modo oscuro"}
             >
@@ -64,7 +64,7 @@ const AdminLayout: React.FC = () => {
                 </svg>
               )}
             </button>
-            <button 
+            <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="p-1 rounded hover:bg-green-600 dark:hover:bg-green-800"
             >
@@ -164,6 +164,17 @@ const AdminLayout: React.FC = () => {
                 </li>
                 <li>
                   <Link
+                    to="/admin/qr"
+                    className={`flex items-center p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors ${isActive('/admin/qr') ? 'bg-green-600 dark:bg-green-800' : ''}`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                    </svg>
+                    {isSidebarOpen && <span className="ml-3">Códigos QR</span>}
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     to="/admin/reports"
                     className={`flex items-center p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors ${isActive('/admin/reports') ? 'bg-green-600 dark:bg-green-800' : ''}`}
                   >
@@ -217,8 +228,8 @@ const AdminLayout: React.FC = () => {
           </ul>
         </nav>
         <div className="absolute bottom-0 w-full p-4 border-t border-green-600 dark:border-green-700">
-          <button 
-            onClick={handleLogout} 
+          <button
+            onClick={handleLogout}
             className="flex items-center w-full p-2 rounded hover:bg-green-600 dark:hover:bg-green-800 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

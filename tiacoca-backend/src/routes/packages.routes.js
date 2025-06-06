@@ -1,6 +1,6 @@
 
 import express from 'express';
-import { getAllPackages, getPackageById, createPackage, updatePackage, deletePackage } from '../controllers/packages.controller.js';
+import { getAllPackages, getPackageById, createPackage, updatePackage, deletePackage } from '../controller/packages.controller.js';
 
 const router = express.Router();
 
