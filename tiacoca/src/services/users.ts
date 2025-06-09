@@ -8,6 +8,8 @@ export interface User {
   identity_card: string;
   role: 'admin' | 'employee';
   created_at: string;
+  temp_password?: string;
+  password_created_at?: string;
 }
 
 export interface CreateUserData {
@@ -17,6 +19,15 @@ export interface CreateUserData {
   birthDate: string;
   identityCard: string;
   role: 'admin' | 'employee';
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+  tempPassword: string;
+}
+
+export interface SetPasswordData {
+  password: string;
 }
 
 // Obtener todos los usuarios
@@ -45,4 +56,20 @@ export const updateUser = async (id: string, userData: Partial<Omit<User, 'id' |
 // Eliminar un usuario
 export const deleteUser = async (id: string): Promise<void> => {
   await api.delete(`/users/${id}`);
+};
+
+// Resetear contraseña (generar automática)
+export const resetUserPassword = async (userId: string): Promise<ResetPasswordResponse> => {
+  const response = await api.post<ResetPasswordResponse>(`/users/${userId}/reset-password`);
+  return response.data;
+};
+
+// Establecer contraseña personalizada
+export const setUserPassword = async (userId: string, passwordData: SetPasswordData): Promise<void> => {
+  await api.post(`/users/${userId}/set-password`, passwordData);
+};
+
+// Limpiar contraseña temporal (para ocultar después de usar)
+export const clearTempPassword = async (userId: string): Promise<void> => {
+  await api.delete(`/users/${userId}/temp-password`);
 };

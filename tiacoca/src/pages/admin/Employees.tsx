@@ -4,18 +4,18 @@ import {
   createUser,
   updateUser,
   deleteUser,
+  resetUserPassword,
+  setUserPassword,
+  clearTempPassword,
   type User,
   type CreateUserData,
 } from '../../services/users';
 
-/* --------- Tipos auxiliares --------- */
 interface FormData extends Omit<CreateUserData, 'role'> {
   role: 'employee' | 'admin';
 }
 
-/* ==================================== */
 const Employees = () => {
-  /* ---------- Estado ---------- */
   const [employees, setEmployees] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -34,7 +34,6 @@ const Employees = () => {
     role: 'employee',
   });
 
-  /* ---------- Cargar empleados ---------- */
   useEffect(() => {
     void fetchEmployees();
   }, []);
@@ -51,10 +50,7 @@ const Employees = () => {
     }
   };
 
-  /* ---------- Handlers ---------- */
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -139,10 +135,94 @@ const Employees = () => {
     }
   };
 
-  const fmt = (iso?: string) =>
-    iso ? new Date(iso).toLocaleDateString('es-BO') : '—';
+  // Generar contraseña automática
+  const handleGeneratePassword = async (employee: User) => {
+    if (!confirm(`¿Generar nueva contraseña automática para ${employee.full_name}?`)) return;
+    
+    try {
+      await resetUserPassword(employee.id);
+      setSuccess('Contraseña generada exitosamente');
+      void fetchEmployees();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error al generar contraseña';
+      setError(msg);
+      setTimeout(() => setError(''), 3000);
+    }
+  };
 
-  /* ---------- Render ---------- */
+  // Establecer contraseña personalizada
+  const handleSetCustomPassword = async (employee: User) => {
+    const newPassword = prompt(`Nueva contraseña para ${employee.full_name}:\n(Mínimo 6 caracteres)`);
+    if (!newPassword) return;
+
+    if (newPassword.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres');
+      setTimeout(() => setError(''), 3000);
+      return;
+    }
+
+    try {
+      await setUserPassword(employee.id, { password: newPassword });
+      setSuccess('Contraseña personalizada establecida');
+      void fetchEmployees();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error al establecer contraseña';
+      setError(msg);
+      setTimeout(() => setError(''), 3000);
+    }
+  };
+
+  // Ocultar contraseña temporal
+  const handleHidePassword = async (employee: User) => {
+    try {
+      await clearTempPassword(employee.id);
+      setSuccess('Contraseña ocultada');
+      void fetchEmployees();
+      setTimeout(() => setSuccess(''), 2000);
+    } catch {
+      setError('Error al ocultar contraseña');
+      setTimeout(() => setError(''), 3000);
+    }
+  };
+
+  // Copiar al portapapeles
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setSuccess('Contraseña copiada al portapapeles');
+      setTimeout(() => setSuccess(''), 2000);
+    } catch {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setSuccess('Contraseña copiada al portapapeles');
+      setTimeout(() => setSuccess(''), 2000);
+    }
+  };
+
+  // Verificar si la contraseña es reciente (últimas 24 horas)
+  const isPasswordRecent = (passwordDate: string) => {
+    const now = new Date();
+    const created = new Date(passwordDate);
+    const hoursDiff = (now.getTime() - created.getTime()) / (1000 * 60 * 60);
+    return hoursDiff < 24;
+  };
+
+  const formatDateTime = (isoDate: string) => {
+    return new Date(isoDate).toLocaleString('es-BO', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between">
@@ -161,59 +241,144 @@ const Employees = () => {
       {loading ? (
         <Spinner />
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-300">
-            <thead className="bg-gray-50 dark:bg-dark-300">
-              <tr>
-                <TH>Nombre</TH>
-                <TH>Email</TH>
-                <TH>Cédula</TH>
-                <TH>Nacimiento</TH>
-                <TH>Rol</TH>
-                <TH>Acciones</TH>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200 dark:bg-dark-200 dark:divide-dark-300">
-              {employees.length === 0 ? (
+        <>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-300">
+              <thead className="bg-gray-50 dark:bg-dark-300">
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                    No hay empleados registrados.
-                  </td>
+                  <TH>Nombre</TH>
+                  <TH>Email</TH>
+                  <TH>Cédula</TH>
+                  <TH>Rol</TH>
+                  <TH>🔑 Contraseña</TH>
+                  <TH>Acciones</TH>
                 </tr>
-              ) : (
-                employees.map((emp) => (
-                  <tr key={emp.id} className="dark:hover:bg-dark-300">
-                    <TD>{emp.full_name ?? '—'}</TD>
-                    <TD>{emp.email}</TD>
-                    <TD>{emp.identity_card ?? '—'}</TD>
-                    <TD>{fmt(emp.birth_date)}</TD>
-                    <TD>
-                      <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${emp.role === 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'}`}
-                      >
-                        {emp.role === 'admin' ? 'Administrador' : 'Empleado'}
-                      </span>
-                    </TD>
-                    <TD>
-                      <button
-                        onClick={() => handleOpenModal(emp)}
-                        className="px-3 py-1 mr-2 text-xs text-white bg-blue-600 rounded-md hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => handleDelete(emp.id)}
-                        className="px-3 py-1 text-xs text-white bg-red-500 rounded-md hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-500"
-                      >
-                        Eliminar
-                      </button>
-                    </TD>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200 dark:bg-dark-200 dark:divide-dark-300">
+                {employees.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                      No hay empleados registrados.
+                    </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ) : (
+                  employees.map((emp) => (
+                    <tr key={emp.id} className="dark:hover:bg-dark-300">
+                      <TD>{emp.full_name ?? '—'}</TD>
+                      <TD>{emp.email}</TD>
+                      <TD>{emp.identity_card ?? '—'}</TD>
+                      <TD>
+                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          emp.role === 'admin' 
+                            ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' 
+                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                        }`}>
+                          {emp.role === 'admin' ? 'Administrador' : 'Empleado'}
+                        </span>
+                      </TD>
+                      
+                      {/* Columna de contraseña */}
+                      <TD>
+                        {emp.role === 'employee' ? (
+                          <div className="flex flex-col gap-2">
+                            {emp.temp_password && emp.password_created_at && isPasswordRecent(emp.password_created_at) ? (
+                              // Mostrar contraseña reciente
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <code className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm font-mono border">
+                                    {emp.temp_password}
+                                  </code>
+                                  <button
+                                    onClick={() => copyToClipboard(emp.temp_password!)}
+                                    className="text-blue-600 hover:text-blue-800 text-sm"
+                                    title="Copiar contraseña"
+                                  >
+                                    📋
+                                  </button>
+                                  <button
+                                    onClick={() => handleHidePassword(emp)}
+                                    className="text-gray-500 hover:text-gray-700 text-sm"
+                                    title="Ocultar contraseña"
+                                  >
+                                    👁️‍🗨️
+                                  </button>
+                                </div>
+                                <div className="text-xs text-green-600">
+                                  Creada: {formatDateTime(emp.password_created_at)}
+                                </div>
+                              </div>
+                            ) : (
+                              // Contraseña oculta o antigua
+                              <div className="flex items-center gap-2">
+                                <span className="text-gray-500 text-sm">••••••••</span>
+                                <button
+                                  onClick={() => handleGeneratePassword(emp)}
+                                  className="text-yellow-600 hover:text-yellow-800 text-xs px-2 py-1 border border-yellow-300 rounded"
+                                  title="Generar contraseña automática"
+                                >
+                                  🔄 Auto
+                                </button>
+                                <button
+                                  onClick={() => handleSetCustomPassword(emp)}
+                                  className="text-blue-600 hover:text-blue-800 text-xs px-2 py-1 border border-blue-300 rounded"
+                                  title="Establecer contraseña personalizada"
+                                >
+                                  ✏️ Custom
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-sm">—</span>
+                        )}
+                      </TD>
+
+                      <TD>
+                        <div className="flex flex-wrap gap-1">
+                          <button
+                            onClick={() => handleOpenModal(emp)}
+                            className="px-3 py-1 text-xs text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            onClick={() => handleDelete(emp.id)}
+                            className="px-3 py-1 text-xs text-white bg-red-500 rounded-md hover:bg-red-700"
+                          >
+                            Eliminar
+                          </button>
+                        </div>
+                      </TD>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Información importante */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 dark:bg-blue-900/20 dark:border-blue-800">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <span className="text-blue-500 text-lg">ℹ️</span>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                  Gestión de Contraseñas
+                </h3>
+                <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                  <ul className="list-disc list-inside space-y-1">
+                    <li><strong>🔄 Auto:</strong> Genera contraseñas automáticas como "RapidoCoca1234"</li>
+                    <li><strong>✏️ Custom:</strong> Te permite establecer una contraseña personalizada</li>
+                    <li><strong>⏰ Visibilidad:</strong> Las contraseñas son visibles por 24 horas después de crearlas</li>
+                    <li><strong>🔒 Seguridad:</strong> Se almacenan encriptadas en el sistema de autenticación</li>
+                    <li><strong>👁️‍🗨️ Ocultar:</strong> Puedes ocultar manualmente las contraseñas antes de las 24h</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       {showModal && (
@@ -229,13 +394,15 @@ const Employees = () => {
   );
 };
 
-/* ---------- UI aux ---------- */
+// Componentes auxiliares
 const Alert = ({ color, message }: { color: 'red' | 'green'; message: string }) => (
   <div className={`p-4 text-sm rounded-lg ${
     color === 'red' 
       ? 'text-red-700 bg-red-100 dark:bg-red-700/20 dark:text-red-100' 
       : 'text-green-700 bg-green-100 dark:bg-green-700/20 dark:text-green-100'
-  }`}>{message}</div>
+  }`}>
+    {message}
+  </div>
 );
 
 const Spinner = () => (
@@ -245,14 +412,17 @@ const Spinner = () => (
 );
 
 const TH: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <th className="px-6 py-3 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-300">{children}</th>
+  <th className="px-6 py-3 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-300">
+    {children}
+  </th>
 );
 
 const TD: React.FC<React.PropsWithChildren> = ({ children }) => (
-  <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap dark:text-white">{children}</td>
+  <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap dark:text-white">
+    {children}
+  </td>
 );
 
-/* ---------- Input Component ---------- */
 interface InputProps {
   label: string;
   name: string;
@@ -289,7 +459,6 @@ const Input: React.FC<InputProps> = ({
   </div>
 );
 
-/* ---------- Modal ---------- */
 interface ModalProps {
   isEditing: boolean;
   formData: FormData;
@@ -318,7 +487,7 @@ const EmployeeModal: React.FC<ModalProps> = ({ isEditing, formData, onChange, on
         
         {!isEditing && (
           <Input 
-            label="Contraseña" 
+            label="Contraseña Inicial" 
             name="password" 
             type="password" 
             value={formData.password} 
