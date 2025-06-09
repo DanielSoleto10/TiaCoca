@@ -1,5 +1,6 @@
 import api from './api';
 
+// ============ INTERFACES EXISTENTES ============
 export interface DailySales {
   day: string;
   total: number;
@@ -39,6 +40,34 @@ export interface CashierClosing {
   notes?: string;
 }
 
+// ============ NUEVAS INTERFACES PARA EXCEL ============
+export interface MonthlySales {
+  month: string; // "2025-01"
+  year: number;
+  total: number;
+  count: number;
+  completed: number;
+  pending: number;
+  cancelled: number;
+}
+
+export interface DetailedSale {
+  id: string;
+  date: string;
+  user_name: string;
+  total: number;
+  status: string;
+  flavors: string[]; // Array de sabores en ese pedido
+}
+
+export interface FlavorByMonth {
+  month: string; // "2025-01"
+  flavor_name: string;
+  count: number;
+}
+
+// ============ FUNCIONES EXISTENTES ============
+
 // Obtener ventas por día
 export const getSalesByDay = async (days: number = 7): Promise<DailySales[]> => {
   const response = await api.get<DailySales[]>('/reports/sales/day', {
@@ -72,5 +101,27 @@ export const getCashierClosings = async (limit: number = 5): Promise<CashierClos
 // Crear cierre de caja
 export const createCashierClosing = async (data: Omit<CashierClosing, 'id' | 'closing_date'>): Promise<CashierClosing> => {
   const response = await api.post<CashierClosing>('/reports/cashier/closings', data);
+  return response.data;
+};
+
+// ============ NUEVAS FUNCIONES PARA EXCEL ============
+
+// Obtener ventas por mes
+export const getSalesByMonth = async (): Promise<MonthlySales[]> => {
+  const response = await api.get<MonthlySales[]>('/reports/sales/monthly');
+  return response.data;
+};
+
+// Obtener ventas detalladas
+export const getDetailedSales = async (startDate?: string, endDate?: string): Promise<DetailedSale[]> => {
+  const response = await api.get<DetailedSale[]>('/reports/sales/detailed', {
+    params: { start_date: startDate, end_date: endDate }
+  });
+  return response.data;
+};
+
+// Obtener sabores por mes
+export const getFlavorsByMonth = async (): Promise<FlavorByMonth[]> => {
+  const response = await api.get<FlavorByMonth[]>('/reports/sales/flavors-monthly');
   return response.data;
 };

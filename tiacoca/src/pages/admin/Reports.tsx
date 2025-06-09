@@ -1,9 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getSalesByDay, getSalesByFlavor, getSalesSummary } from '../../services/reports';
+import { getSalesByDay, getSalesByFlavor, getSalesSummary, getSalesByMonth, getDetailedSales, getFlavorsByMonth } from '../../services/reports';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Line, Bar, Pie } from 'react-chartjs-2';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+
+// Interfaz para jsPDF con autoTable
+interface jsPDFWithAutoTable extends jsPDF {
+  lastAutoTable: {
+    finalY: number;
+  };
+}
 
 // Definición de interfaces
 interface DailySales {
@@ -34,6 +42,32 @@ interface SalesSummary {
   };
 }
 
+// Nuevas interfaces para Excel
+interface MonthlySales {
+  month: string;
+  year: number;
+  total: number;
+  count: number;
+  completed: number;
+  pending: number;
+  cancelled: number;
+}
+
+interface DetailedSale {
+  id: string;
+  date: string;
+  user_name: string;
+  total: number;
+  status: string;
+  flavors: string[];
+}
+
+interface FlavorByMonth {
+  month: string;
+  flavor_name: string;
+  count: number;
+}
+
 // Registrar componentes de ChartJS
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, ArcElement);
 
@@ -41,6 +75,7 @@ const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
   
   const [salesByDay, setSalesByDay] = useState<DailySales[]>([]);
   const [salesByFlavor, setSalesByFlavor] = useState<FlavorSales[]>([]);
@@ -91,6 +126,23 @@ const Reports = () => {
   useEffect(() => {
     void fetchData();
   }, [fetchData]);
+
+  // Cerrar dropdown al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (showDropdown) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showDropdown]);
 
   // Datos para el gráfico de ventas por día
   const salesByDayChart = {
@@ -175,7 +227,7 @@ const Reports = () => {
   };
 
   const generateSalesReport = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF() as jsPDFWithAutoTable;
     
     // Título
     doc.setFontSize(18);
@@ -188,8 +240,8 @@ const Reports = () => {
     // Resumen
     doc.text('Resumen de Ventas', 14, 40);
     
-    // @ts-expect-error jspdf-autotable no está correctamente tipado
-    doc.autoTable({
+    // Tabla de resumen
+    autoTable(doc, {
       startY: 45,
       head: [['Período', 'Total Ventas', 'Pedidos Completados', 'Pedidos Pendientes', 'Pedidos Cancelados']],
       body: [
@@ -199,12 +251,10 @@ const Reports = () => {
     });
     
     // Ventas por día
-    // @ts-expect-error jspdf-autotable no está correctamente tipado
-    const finalY1 = doc.autoTable.previous.finalY || 45;
+    const finalY1 = doc.lastAutoTable.finalY || 45;
     doc.text('Ventas por Día', 14, finalY1 + 10);
     
-    // @ts-expect-error jspdf-autotable no está correctamente tipado
-    doc.autoTable({
+    autoTable(doc, {
       startY: finalY1 + 15,
       head: [['Fecha', 'Total Ventas', 'Cantidad de Pedidos']],
       body: salesByDay.map(item => [
@@ -215,12 +265,10 @@ const Reports = () => {
     });
     
     // Sabores más vendidos
-    // @ts-expect-error jspdf-autotable no está correctamente tipado
-    const finalY2 = doc.autoTable.previous.finalY || finalY1 + 15;
+    const finalY2 = doc.lastAutoTable.finalY || finalY1 + 15;
     doc.text('Sabores Más Vendidos', 14, finalY2 + 10);
     
-    // @ts-expect-error jspdf-autotable no está correctamente tipado
-    doc.autoTable({
+    autoTable(doc, {
       startY: finalY2 + 15,
       head: [['Sabor', 'Cantidad']],
       body: salesByFlavor.slice(0, 10).map(item => [
@@ -238,16 +286,137 @@ const Reports = () => {
     }, 3000);
   };
 
+  const generateExcelReport = async () => {
+    try {
+      setLoading(true);
+      
+      // Obtener datos para Excel
+      const [monthlySalesData, detailedSalesData, flavorsByMonthData] = await Promise.all([
+        getSalesByMonth() as Promise<MonthlySales[]>,
+        getDetailedSales() as Promise<DetailedSale[]>,
+        getFlavorsByMonth() as Promise<FlavorByMonth[]>
+      ]);
+      
+      // Crear libro de Excel
+      const workbook = XLSX.utils.book_new();
+      
+      // Hoja 1: Resumen Mensual
+      const monthlySheet = XLSX.utils.json_to_sheet(
+        monthlySalesData.map(item => ({
+          'Mes': item.month,
+          'Año': item.year,
+          'Total Ventas (Bs)': item.total.toFixed(2),
+          'Pedidos Completados': item.completed,
+          'Pedidos Pendientes': item.pending,
+          'Pedidos Cancelados': item.cancelled,
+          'Promedio por Pedido': item.count > 0 ? (item.total / item.count).toFixed(2) : '0.00'
+        }))
+      );
+      XLSX.utils.book_append_sheet(workbook, monthlySheet, 'Resumen Mensual');
+      
+      // Hoja 2: Detalle de Ventas
+      const detailedSheet = XLSX.utils.json_to_sheet(
+        detailedSalesData.map(item => ({
+          'Fecha': new Date(item.date).toLocaleDateString('es-ES'),
+          'Usuario/Cliente': item.user_name,
+          'Total Venta (Bs)': item.total.toFixed(2),
+          'Estado': item.status === 'completed' ? 'Completado' : 
+                   item.status === 'pending' ? 'Pendiente' : 'Cancelado',
+          'Sabores': item.flavors.join(', ')
+        }))
+      );
+      XLSX.utils.book_append_sheet(workbook, detailedSheet, 'Detalle de Ventas');
+      
+      // Hoja 3: Sabores por Mes
+      const flavorsSheet = XLSX.utils.json_to_sheet(
+        flavorsByMonthData.map(item => ({
+          'Mes': item.month,
+          'Sabor': item.flavor_name,
+          'Cantidad Vendida': item.count
+        }))
+      );
+      XLSX.utils.book_append_sheet(workbook, flavorsSheet, 'Sabores por Mes');
+      
+      // Generar y descargar archivo
+      const fileName = `reporte_ventas_completo_${new Date().toLocaleDateString('es-ES').replace(/\//g, '-')}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
+      
+      setSuccess('Reporte Excel generado exitosamente');
+      setTimeout(() => {
+        setSuccess('');
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error generando Excel:', error);
+      setError('Error al generar el reporte Excel');
+      setTimeout(() => {
+        setError('');
+      }, 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Reportes</h2>
-        <button
-          onClick={generateSalesReport}
-          className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
-        >
-          Generar PDF
-        </button>
+        
+        {/* Dropdown de reportes */}
+        <div className="relative inline-block">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log('Botón clickeado, showDropdown:', !showDropdown);
+              setShowDropdown(!showDropdown);
+            }}
+            className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700 flex items-center space-x-2 transition-colors"
+          >
+            <span>Generar Reporte</span>
+            <svg className={`w-5 h-5 transform transition-transform ${showDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          
+          {/* Dropdown Menu */}
+          {showDropdown && (
+            <div 
+              className="absolute right-0 mt-2 w-48 bg-green-600 dark:bg-green-700 rounded-md shadow-xl z-[9999] border border-green-500 dark:border-green-600 overflow-hidden"
+              style={{ position: 'absolute', top: '100%', right: 0 }}
+            >
+              <div className="py-1">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log('PDF clickeado');
+                    generateSalesReport();
+                    setShowDropdown(false);
+                  }}
+                  className="flex items-center w-full px-4 py-2 text-sm text-white hover:bg-green-700 dark:hover:bg-green-800 transition-colors"
+                >
+                  <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Generar PDF
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log('Excel clickeado');
+                    generateExcelReport();
+                    setShowDropdown(false);
+                  }}
+                  className="flex items-center w-full px-4 py-2 text-sm text-white hover:bg-green-700 dark:hover:bg-green-800 transition-colors"
+                >
+                  <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  Generar Excel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {error && (

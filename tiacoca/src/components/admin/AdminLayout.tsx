@@ -45,9 +45,12 @@ const AdminLayout: React.FC = () => {
       {/* Sidebar */}
       <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-green-700 dark:bg-green-900 text-white transition-all duration-300 ease-in-out fixed h-full z-10`}>
         <div className="flex items-center justify-between p-4 border-b border-green-600 dark:border-green-700">
-          <h2 className={`font-bold transition-opacity duration-200 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>
-            Tia Coca
-          </h2>
+          <div className={`flex justify-center transition-opacity duration-200 ${isSidebarOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>
+            <img 
+              src="/logosfondo.png" 
+              className="h-18 w-auto object-contain"
+            />
+          </div>
           <div className="flex items-center space-x-2">
             <button
               onClick={toggleDarkMode}
@@ -244,7 +247,7 @@ const AdminLayout: React.FC = () => {
       <div className={`flex-1 overflow-auto ${isSidebarOpen ? 'ml-64' : 'ml-20'} transition-all duration-300`}>
         <header className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 shadow border-b dark:border-gray-700">
           <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Tia Coca - {isAdmin ? 'Panel de Administración' : 'Panel de Empleado'}
+            {isAdmin ? 'Panel de Administración' : 'Panel de Empleado'}
           </h1>
           <div className="flex items-center space-x-4">
             <span className="text-sm text-gray-600 dark:text-gray-300">

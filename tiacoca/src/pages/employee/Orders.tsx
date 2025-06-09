@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getOrdersByEmployee, updateOrderStatus } from '../../services/orders';
 import { io } from 'socket.io-client';
@@ -35,6 +35,9 @@ const Orders = () => {
   // Estados para tiempo real
   const [newOrdersCount, setNewOrdersCount] = useState(0);
   
+  // Estado para la búsqueda
+  const [searchTerm, setSearchTerm] = useState('');
+  
   // DEBUGGING - LOG INICIAL
   useEffect(() => {
     console.log('🔍 =================================');
@@ -64,6 +67,25 @@ const Orders = () => {
       setLoading(false);
     }
   }, [user, filter]);
+
+  // Filtrar pedidos basado en la búsqueda
+  const filteredOrders = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return orders;
+    }
+
+    const searchLower = searchTerm.toLowerCase().trim();
+    
+    return orders.filter(order => {
+      // Buscar por número de pedido (ID)
+      const orderIdMatch = order.id.toLowerCase().includes(searchLower);
+      
+      // Buscar por nombre del cliente
+      const nameMatch = order.full_name.toLowerCase().includes(searchLower);
+      
+      return orderIdMatch || nameMatch;
+    });
+  }, [orders, searchTerm]);
 
   // SOCKET.IO CON DEBUGGING PARA ENCONTRAR EL ERROR
   useEffect(() => {
@@ -264,6 +286,11 @@ const Orders = () => {
     setTimeout(() => setSuccess(''), 2000);
   };
 
+  // Limpiar búsqueda
+  const clearSearch = () => {
+    setSearchTerm('');
+  };
+
   const getStatusBadge = (status: OrderStatus) => {
     switch (status) {
       case 'pending':
@@ -310,7 +337,7 @@ const Orders = () => {
           <button
             onClick={handleManualRefresh}
             disabled={loading}
-            className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+            className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
           >
             {loading ? (
               <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
@@ -327,7 +354,7 @@ const Orders = () => {
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
               filter === 'all' 
                 ? 'bg-green-600 text-white' 
-                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'
             }`}
           >
             Todos
@@ -337,7 +364,7 @@ const Orders = () => {
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
               filter === 'pending' 
                 ? 'bg-green-600 text-white' 
-                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'
             }`}
           >
             Pendientes
@@ -347,7 +374,7 @@ const Orders = () => {
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
               filter === 'completed' 
                 ? 'bg-green-600 text-white' 
-                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'
             }`}
           >
             Completados
@@ -357,7 +384,7 @@ const Orders = () => {
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
               filter === 'cancelled' 
                 ? 'bg-green-600 text-white' 
-                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'
             }`}
           >
             Cancelados
@@ -365,14 +392,60 @@ const Orders = () => {
         </div>
       </div>
 
+      {/* Barra de búsqueda */}
+      <div className="relative">
+        <div className="flex items-center space-x-2">
+          <div className="relative flex-1 max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Buscar por número de pedido o nombre del cliente..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500 text-sm"
+            />
+          </div>
+          
+          {/* Botón para limpiar búsqueda */}
+          {searchTerm && (
+            <button
+              onClick={clearSearch}
+              className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+              title="Limpiar búsqueda"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+        
+        {/* Contador de resultados */}
+        {searchTerm && (
+          <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            {filteredOrders.length === 0 ? (
+              <span>No se encontraron pedidos que coincidan con "{searchTerm}"</span>
+            ) : (
+              <span>
+                {filteredOrders.length} pedido{filteredOrders.length !== 1 ? 's' : ''} encontrado{filteredOrders.length !== 1 ? 's' : ''} para "{searchTerm}"
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
       {error && (
-        <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+        <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-700/20 dark:text-red-100">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="p-4 text-sm text-green-700 bg-green-100 rounded-lg">
+        <div className="p-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-700/20 dark:text-green-100">
           {success}
         </div>
       )}
@@ -381,33 +454,38 @@ const Orders = () => {
         <div className="flex items-center justify-center h-64">
           <div className="flex flex-col items-center space-y-2">
             <div className="w-16 h-16 border-t-4 border-b-4 border-green-500 rounded-full animate-spin"></div>
-            <p className="text-gray-500">Cargando tus pedidos...</p>
+            <p className="text-gray-500 dark:text-gray-400">Cargando tus pedidos...</p>
           </div>
         </div>
       ) : (
         <div className="space-y-4">
-          {orders.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
+          {filteredOrders.length === 0 ? (
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
-              <p className="text-lg font-medium">No tienes pedidos asignados</p>
+              <p className="text-lg font-medium">
+                {searchTerm ? 'No se encontraron resultados' : 'No tienes pedidos asignados'}
+              </p>
               <p className="text-sm">
-                {filter !== 'all' 
-                  ? `No tienes pedidos ${filter === 'pending' ? 'pendientes' : filter === 'completed' ? 'completados' : 'cancelados'}`
-                  : 'Espera a que el administrador te asigne pedidos'
-                }
+                {searchTerm ? (
+                  <>Intenta con otro término de búsqueda o <button onClick={clearSearch} className="text-green-600 hover:text-green-700 underline">limpia la búsqueda</button></>
+                ) : (
+                  filter !== 'all' 
+                    ? `No tienes pedidos ${filter === 'pending' ? 'pendientes' : filter === 'completed' ? 'completados' : 'cancelados'}`
+                    : 'Espera a que el administrador te asigne pedidos'
+                )}
               </p>
             </div>
           ) : (
-            orders.map((order) => (
-              <div key={order.id} className="p-6 bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+            filteredOrders.map((order) => (
+              <div key={order.id} className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 hover:shadow-md transition-shadow">
                 <div className="flex flex-wrap items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-medium text-gray-900">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                       Pedido #{order.id.slice(0, 8)}
                     </h3>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       {formatDate(order.created_at)}
                     </p>
                   </div>
@@ -448,11 +526,11 @@ const Orders = () => {
                 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <h4 className="mb-2 text-sm font-medium text-gray-500">Información del Cliente</h4>
-                    <p className="text-sm text-gray-700">
+                    <h4 className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">Información del Cliente</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                       <span className="font-medium">Nombre:</span> {order.full_name}
                     </p>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                       <span className="font-medium">Comprobante:</span> 
                       {order.payment_proof_url ? (
                         <span className="text-green-600 font-medium ml-1">✓ Subido</span>
@@ -463,24 +541,24 @@ const Orders = () => {
                   </div>
                   
                   <div>
-                    <h4 className="mb-2 text-sm font-medium text-gray-500">Detalles del Pedido</h4>
-                    <p className="text-sm text-gray-700">
+                    <h4 className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">Detalles del Pedido</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                       <span className="font-medium">Sabores:</span> {order.flavors?.join(', ') || 'No disponible'}
                     </p>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                       <span className="font-medium">Dulzura:</span> {order.sweetness || 'No disponible'}
                     </p>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                       <span className="font-medium">Machucado:</span> {order.crushed_type || 'No disponible'}
                     </p>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                       <span className="font-medium">Paquete:</span> {order.package_type || 'No disponible'}
                     </p>
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
                       <span className="font-medium">Monto:</span> {order.amount?.toFixed(2) || '0.00'} Bs
                     </p>
                     {order.notes && (
-                      <p className="text-sm text-gray-700 mt-2">
+                      <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
                         <span className="font-medium">Notas:</span> {order.notes}
                       </p>
                     )}
@@ -495,12 +573,12 @@ const Orders = () => {
       {/* Modal para ver comprobante */}
       {selectedProof && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden border">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="text-lg font-medium text-gray-900">Comprobante de Pago</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden border dark:border-gray-700">
+            <div className="flex items-center justify-between p-4 border-b dark:border-gray-600">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Comprobante de Pago</h3>
               <button
                 onClick={handleCloseProof}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -513,7 +591,7 @@ const Orders = () => {
                 {proofLoading && (
                   <div className="flex items-center justify-center py-8">
                     <div className="w-8 h-8 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
-                    <span className="ml-2 text-gray-700">Cargando imagen...</span>
+                    <span className="ml-2 text-gray-700 dark:text-gray-300">Cargando imagen...</span>
                   </div>
                 )}
                 
@@ -545,7 +623,7 @@ const Orders = () => {
                 
                 <button
                   onClick={handleCloseProof}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500 transition-colors"
                 >
                   Cerrar
                 </button>

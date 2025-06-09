@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { getAllOrders, updateOrderStatus } from '../../services/orders';
 import { io } from 'socket.io-client';
 
@@ -35,6 +35,9 @@ const Orders = () => {
   
   // Estados para tiempo real
   const [newOrdersCount, setNewOrdersCount] = useState(0);
+  
+  // Estado para la búsqueda
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -49,6 +52,25 @@ const Orders = () => {
       setLoading(false);
     }
   }, [filter]);
+
+  // Filtrar pedidos basado en la búsqueda
+  const filteredOrders = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return orders;
+    }
+
+    const searchLower = searchTerm.toLowerCase().trim();
+    
+    return orders.filter(order => {
+      // Buscar por número de pedido (ID)
+      const orderIdMatch = order.id.toLowerCase().includes(searchLower);
+      
+      // Buscar por nombre del cliente
+      const nameMatch = order.full_name.toLowerCase().includes(searchLower);
+      
+      return orderIdMatch || nameMatch;
+    });
+  }, [orders, searchTerm]);
 
   // Configuración de Socket.IO
   useEffect(() => {
@@ -197,6 +219,11 @@ const Orders = () => {
     setTimeout(() => setSuccess(''), 2000);
   };
 
+  // Limpiar búsqueda
+  const clearSearch = () => {
+    setSearchTerm('');
+  };
+
   const getStatusBadge = (status: OrderStatus) => {
     switch (status) {
       case 'pending':
@@ -300,6 +327,52 @@ const Orders = () => {
         </div>
       </div>
 
+      {/* Barra de búsqueda */}
+      <div className="relative">
+        <div className="flex items-center space-x-2">
+          <div className="relative flex-1 max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Buscar por número de pedido o nombre del cliente..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500 text-sm"
+            />
+          </div>
+          
+          {/* Botón para limpiar búsqueda */}
+          {searchTerm && (
+            <button
+              onClick={clearSearch}
+              className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+              title="Limpiar búsqueda"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+        
+        {/* Contador de resultados */}
+        {searchTerm && (
+          <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            {filteredOrders.length === 0 ? (
+              <span>No se encontraron pedidos que coincidan con "{searchTerm}"</span>
+            ) : (
+              <span>
+                {filteredOrders.length} pedido{filteredOrders.length !== 1 ? 's' : ''} encontrado{filteredOrders.length !== 1 ? 's' : ''} para "{searchTerm}"
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
       {error && (
         <div className="p-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-700/20 dark:text-red-100">
           {error}
@@ -321,21 +394,26 @@ const Orders = () => {
         </div>
       ) : (
         <div className="space-y-4">
-          {orders.length === 0 ? (
+          {filteredOrders.length === 0 ? (
             <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
-              <p className="text-lg font-medium">No hay pedidos</p>
+              <p className="text-lg font-medium">
+                {searchTerm ? 'No se encontraron resultados' : 'No hay pedidos'}
+              </p>
               <p className="text-sm">
-                {filter !== 'all' 
-                  ? `No se encontraron pedidos ${filter === 'pending' ? 'pendientes' : filter === 'completed' ? 'completados' : 'cancelados'}`
-                  : 'Aún no se han registrado pedidos en el sistema'
-                }
+                {searchTerm ? (
+                  <>Intenta con otro término de búsqueda o <button onClick={clearSearch} className="text-green-600 hover:text-green-700 underline">limpia la búsqueda</button></>
+                ) : (
+                  filter !== 'all' 
+                    ? `No se encontraron pedidos ${filter === 'pending' ? 'pendientes' : filter === 'completed' ? 'completados' : 'cancelados'}`
+                    : 'Aún no se han registrado pedidos en el sistema'
+                )}
               </p>
             </div>
           ) : (
-            orders.map((order) => (
+            filteredOrders.map((order) => (
               <div key={order.id} className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 hover:shadow-md transition-shadow">
                 <div className="flex flex-wrap items-start justify-between mb-4">
                   <div>
