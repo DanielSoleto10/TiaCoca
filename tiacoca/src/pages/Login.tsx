@@ -93,10 +93,15 @@ const Login: React.FC = () => {
       <div className="hidden lg:flex lg:w-1/2 bg-white items-center justify-center p-12">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-green-600 mb-6">Tía Coca</h1>
-          <div className="bg-green-100 p-8 rounded-full inline-block mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-            </svg>
+          <div className="p-8 rounded-full inline-block mb-4" style={{backgroundColor: '#BFFFE0'}}>
+            {/* Icono de hoja de coca - usando imagen real */}
+            <img
+              src="/hojar.png"
+              alt="Hoja de coca"
+              className="h-24 w-24 object-contain"
+              onLoad={() => console.log('✅ Hoja de coca cargada correctamente')}
+              onError={(e) => console.log('❌ Error cargando hoja de coca:', e)}
+            />
           </div>
           <p className="text-gray-600 text-xl">Sistema de Gestión de Pedidos</p>
         </div>

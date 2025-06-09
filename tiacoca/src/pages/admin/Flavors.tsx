@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useEffect, useMemo, ChangeEvent, FormEvent } from 'react';
 import { getAllFlavors, createFlavor, updateFlavor, deleteFlavor } from '../../services/flavors';
 import { getAllCategories } from '../../services/categories';
 
@@ -28,6 +28,8 @@ const Flavors = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -41,6 +43,26 @@ const Flavors = () => {
   useEffect(() => {
     void fetchData();
   }, []);
+
+  // Filtrar y ordenar sabores
+  const filteredFlavors = useMemo(() => {
+    let filtered = [...flavors];
+
+    // Filtrar por categoría
+    if (categoryFilter !== 'all') {
+      filtered = filtered.filter(flavor => flavor.category_id === categoryFilter);
+    }
+
+    // Filtrar por término de búsqueda
+    if (searchTerm.trim() !== '') {
+      filtered = filtered.filter(flavor =>
+        flavor.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Ordenar alfabéticamente
+    return filtered.sort((a, b) => a.name.localeCompare(b.name));
+  }, [flavors, searchTerm, categoryFilter]);
 
   const fetchData = async (): Promise<void> => {
     try {
@@ -175,6 +197,70 @@ const Flavors = () => {
         </div>
       )}
 
+      {/* Filtros y búsqueda */}
+      <div className="space-y-4">
+        {/* Barra de búsqueda */}
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <span className="text-gray-400 text-lg">🔍</span>
+          </div>
+          <input
+            type="text"
+            placeholder="Buscar sabor..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-dark-300 dark:border-dark-400 dark:text-white dark:placeholder-gray-400"
+          />
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => setSearchTerm('')}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            >
+              <span className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-lg cursor-pointer">✕</span>
+            </button>
+          )}
+        </div>
+
+        {/* Filtro por categoría */}
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setCategoryFilter('all')}
+            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+              categoryFilter === 'all'
+                ? 'bg-primary-500 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-dark-300 dark:text-gray-300 dark:hover:bg-dark-400'
+            }`}
+          >
+            Todos ({flavors.length})
+          </button>
+          {categories.map(category => {
+            const count = flavors.filter(f => f.category_id === category.id).length;
+            return (
+              <button
+                key={category.id}
+                onClick={() => setCategoryFilter(category.id)}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  categoryFilter === category.id
+                    ? 'bg-primary-500 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-dark-300 dark:text-gray-300 dark:hover:bg-dark-400'
+                }`}
+              >
+                {category.name} ({count})
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Contador de resultados */}
+        <div className="text-sm text-gray-600 dark:text-gray-400">
+          Mostrando {filteredFlavors.length} de {flavors.length} sabores
+          {searchTerm && (
+            <span> · Búsqueda: "{searchTerm}"</span>
+          )}
+        </div>
+      </div>
+
       {loading ? (
         <div className="flex items-center justify-center h-64">
           <div className="w-16 h-16 border-t-4 border-b-4 border-primary-500 rounded-full animate-spin dark:border-primary-400"></div>
@@ -196,14 +282,17 @@ const Flavors = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:bg-dark-200 dark:divide-dark-300">
-              {flavors.length === 0 ? (
+              {filteredFlavors.length === 0 ? (
                 <tr>
                   <td colSpan={3} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                    No hay sabores registrados.
+                    {searchTerm || categoryFilter !== 'all' 
+                      ? 'No se encontraron sabores que coincidan con los filtros.'
+                      : 'No hay sabores registrados.'
+                    }
                   </td>
                 </tr>
               ) : (
-                flavors.map((flavor) => (
+                filteredFlavors.map((flavor) => (
                   <tr key={flavor.id} className="dark:hover:bg-dark-300">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900 dark:text-white">{flavor.name}</div>
